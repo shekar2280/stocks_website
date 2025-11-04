@@ -16,7 +16,18 @@ interface StockDetailsProps {
 const scriptUrl = "https://s3.tradingview.com/external-embedding/embed-widget-";
 
 export default async function StockDetails({ params }: StockDetailsProps) {
-  const { symbol } = await params;
+  const { symbol: rawSymbol } = await params;
+
+  const formatTradingViewSymbol = (sym: string) => {
+    if (!sym) return "";
+    const upper = sym.toUpperCase();
+    if (upper.endsWith(".NS")) return `NSE:${upper.replace(".NS", "")}`;
+    if (upper.endsWith(".BO")) return `BSE:${upper.replace(".BO", "")}`;
+    if (upper.endsWith(".TO")) return `TSX:${upper.replace(".TO", "")}`;
+    return upper;
+  };
+
+  const symbol = formatTradingViewSymbol(rawSymbol);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[70%_30%] min-h-screen gap-6">
