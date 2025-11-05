@@ -3,7 +3,15 @@
 import { Watchlist } from "@/database/models/watchlist.models";
 import { connectToDB } from "@/database/mongoose";
 
-export async function getWatchlistSymbolsByEmail(email: string): Promise<string[]> {
+function normalizeWatchlistItemToTradingView(item: { symbol?: string; company?: string }) {
+  const symbol = String(item.symbol || '').trim();
+  const company = (item.company || '').trim();
+
+  const display = company || (symbol.includes(':') ? symbol.split(':')[1] : symbol);
+  return { s: symbol, d: display || symbol };
+}
+
+export async function getWatchlistSymbolsByEmail(email: string): Promise<Array<{ s: string; d: string }>> {
   if (!email) return [];
 
   try {
@@ -19,8 +27,9 @@ export async function getWatchlistSymbolsByEmail(email: string): Promise<string[
     const userId = (user.id as string) || String(user._id || '');
     if (!userId) return [];
 
-    const items = await Watchlist.find({ userId }, { symbol: 1 }).lean();
-    return items.map((i) => String(i.symbol));
+    const items = await Watchlist.find({ userId }, { symbol: 1, company: 1 }).lean();
+
+    return items.map((i) => normalizeWatchlistItemToTradingView(i));
   } catch (err) {
     console.error('getWatchlistSymbolsByEmail error:', err);
     return [];

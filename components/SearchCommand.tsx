@@ -21,8 +21,10 @@ import { searchStocks } from "@/lib/actions/finnhub.actions";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
   addToWatchlist,
+  getWatchlistSymbolsByEmail,
   removeFromWatchlist,
 } from "@/lib/actions/watchlist.actions";
+import { useRouter } from "next/navigation";
 
 export default function SearchCommand({
   renderAs = "button",
@@ -36,7 +38,29 @@ export default function SearchCommand({
   const [stocks, setStocks] =
     useState<StockWithWatchlistStatus[]>(initialStocks);
 
-  console.log("User email: ", userEmail);
+  const router = useRouter();
+
+  useEffect(() => {
+  if (!userEmail) return;
+
+  const fetchWatchlist = async () => {
+    try {
+      const res = await getWatchlistSymbolsByEmail(userEmail);
+      const watchlistSet = new Set(res.map((i) => i.s));
+
+      setStocks(prev =>
+        prev.map(stock => ({
+          ...stock,
+          isInWatchlist: watchlistSet.has(stock.symbol),
+        }))
+      );
+    } catch (error) {
+      console.error("Failed to fetch watchlist:", error);
+    }
+  };
+
+  fetchWatchlist();
+}, [userEmail]);
 
   const isSearchMode = !!searchTerm.trim();
   const uniqueStocks = Array.from(
@@ -174,6 +198,8 @@ export default function SearchCommand({
                                 : s
                             )
                           );
+
+                          router.refresh();
                         } catch (error) {
                           console.error("Failed to update watchlist:", error);
                         }
