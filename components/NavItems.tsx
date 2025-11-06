@@ -25,7 +25,7 @@ const NavItems = ({
       {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
         if (href === "/search")
           return (
-            <li key="search-trigger"  className="flex items-center gap-2">
+            <li key="search-trigger"  className="flex items-center gap-2 hover:text-yellow-500">
               <Icon className="w-4 h-4" />
               <SearchCommand
                 renderAs="text"
