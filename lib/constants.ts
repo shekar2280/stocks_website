@@ -137,6 +137,12 @@ export const WATCHLIST_OVERVIEW_WIDGET_CONFIG = (
   showChart: true,
 });
 
+export const WATCHLIST_OVERVIEW_WIDGET_CONFIG_MOBILE = (symbols: { s: string; d: string }[]) => ({
+  ...WATCHLIST_OVERVIEW_WIDGET_CONFIG(symbols),
+  width: "340",   
+  height: "400",  
+});
+
 export const TICKER_TAPE_WIDGET_CONFIG = (symbols: string[]) => ({
   symbols: symbols.map((sym) => ({
     proName: sym,
@@ -160,7 +166,7 @@ export const CRYPTO_WIDGET_CONFIG = {
 };
 
 export const HEATMAP_WIDGET_CONFIG = {
-  dataSource: "SPX500",
+  dataSource: "NIFTY50",
   blockSize: "market_cap_basic",
   blockColor: "change",
   grouping: "sector",
@@ -233,6 +239,24 @@ export const MARKET_DATA_WIDGET_CONFIG = {
     },
   ],
 };
+
+export const SECTOR_TICKER_TAPE_WIDGET_CONFIG = () => {
+  const allSymbols = MARKET_DATA_WIDGET_CONFIG.symbolsGroups.flatMap((group) =>
+    group.symbols.map((s) => ({
+      proName: s.name,
+      title: s.displayName,
+    }))
+  );
+
+  return {
+    symbols: allSymbols,
+    colorTheme: "dark",
+    isTransparent: false,
+    showSymbolLogo: true,
+    locale: "en",
+  };
+};
+
 
 export const SYMBOL_INFO_WIDGET_CONFIG = (symbol: string) => ({
   symbol: symbol.toUpperCase(),
