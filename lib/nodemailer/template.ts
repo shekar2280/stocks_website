@@ -147,7 +147,7 @@ export const WELCOME_EMAIL_TEMPLATE = `<!DOCTYPE html>
               Stocksy keeps you ahead with curated market updates and powerful analytics — helping you make smarter investment decisions every day.
             </p>
 
-            <a href="https://stocksy.vercel.app/" class="button">Go to Dashboard</a>
+            <a href="https://stocksy-coral.vercel.app/" class="button">Go to Dashboard</a>
 
             <p style="text-align:center; color:#9ca3af; font-size:14px;">
               Need help? <a href="mailto:support@stocksy.com">Contact support</a>
@@ -156,7 +156,7 @@ export const WELCOME_EMAIL_TEMPLATE = `<!DOCTYPE html>
 
           <!-- Footer -->
           <div class="footer">
-            <a href="#">Unsubscribe</a> | <a href="https://stocksy.vercel.app/">Visit Stocksy</a><br />
+            <a href="#">Unsubscribe</a> | <a href="https://stocksy-coral.vercel.app/">Visit Stocksy</a><br />
             © ${new Date().getFullYear()} Stocksy. All rights reserved.
           </div>
         </div>
@@ -295,7 +295,7 @@ export const NEWS_SUMMARY_EMAIL_TEMPLATE = `<!DOCTYPE html>
                                     <!-- Using standard placeholder # for unsubscribe link as is common practice -->
                                     <a href="#" style="color: #d1d5db !important; text-decoration: underline;">Unsubscribe</a> | 
                                     <!-- Fixed URL to be consistent with common use -->
-                                    <a href="https://stocksy.com/" style="color: #d1d5db !important; text-decoration: underline;">Visit Stocksy</a>
+                                    <a href="https://stocksy-coral.vercel.app/" style="color: #d1d5db !important; text-decoration: underline;">Visit Stocksy</a>
                                 </p>
                                 <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #9ca3af !important;">
                                     © 2025 Stocksy
@@ -539,12 +539,12 @@ export const STOCK_ALERT_UPPER_EMAIL_TEMPLATE = `<!DOCTYPE html>
       </div>
 
       <div class="cta">
-        <a href="https://stock-market-dev.vercel.app/">Open Dashboard</a>
+        <a href="https://stocksy-coral.vercel.app/watchlist">Open Dashboard</a>
       </div>
 
       <div class="footer">
         <p>You’re receiving this because you subscribed to Stocksy alerts.</p>
-        <p><a href="#">Unsubscribe</a> | <a href="https://stocksy.app">Visit Stocksy</a></p>
+        <p><a href="#">Unsubscribe</a> | <a href="https://stocksy-coral.vercel.app/">Visit Stocksy</a></p>
         <p>© 2025 Stocksy</p>
       </div>
     </div>
@@ -780,12 +780,12 @@ export const STOCK_ALERT_LOWER_EMAIL_TEMPLATE = `<!DOCTYPE html>
       </div>
 
       <div class="cta">
-        <a href="https://stock-market-dev.vercel.app/">Open Dashboard</a>
+        <a href="https://stocksy-coral.vercel.app/watchlist">Open Dashboard</a>
       </div>
 
       <div class="footer">
         <p>You’re receiving this because you subscribed to Stocksy alerts.</p>
-        <p><a href="#">Unsubscribe</a> | <a href="https://stocksy.app">Visit Stocksy</a></p>
+        <p><a href="#">Unsubscribe</a> | <a href="https://stocksy-coral.vercel.app/">Visit Stocksy</a></p>
         <p>© 2025 Stocksy</p>
       </div>
     </div>
@@ -1030,12 +1030,12 @@ export const VOLUME_ALERT_EMAIL_TEMPLATE = `<!DOCTYPE html>
       </div>
 
       <div class="cta">
-        <a href="https://stock-market-dev.vercel.app/">Open Dashboard</a>
+        <a href="https://stocksy-coral.vercel.app/watchlist">Open Dashboard</a>
       </div>
 
       <div class="footer">
         <p>You’re receiving this because you subscribed to Stocksy alerts.</p>
-        <p><a href="#">Unsubscribe</a> | <a href="https://stocksy.app">Visit Stocksy</a></p>
+        <p><a href="#">Unsubscribe</a> | <a href="https://stocksy-coral.vercel.app/">Visit Stocksy</a></p>
         <p>© 2025 Stocksy</p>
       </div>
     </div>
@@ -1208,7 +1208,7 @@ export const INACTIVE_USER_REMINDER_EMAIL_TEMPLATE = `<!DOCTYPE html>
                     </div>
 
                     <div class="footer">
-                        <a href="{{unsubscribeUrl}}">Unsubscribe</a> | <a href="{{dashboardUrl}}">Visit Stocksy</a><br />
+                        <a href="{{unsubscribeUrl}}">Unsubscribe</a> | <a href="https://stocksy-coral.vercel.app/">Visit Stocksy</a><br />
                         © 2025 Stocksy. All rights reserved.
                     </div>
                 </div>
