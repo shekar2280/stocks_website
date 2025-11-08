@@ -168,7 +168,7 @@ export const searchStocks = cache(async (query?: string, email?: string): Promis
           name,
           exchange,
           type,
-          isInWatchlist: watchlistSymbols.includes(upper),
+          isInWatchlist: watchlistSymbols.some((sym) => sym.s === upper),
         };
         return item;
       })
