@@ -40,7 +40,6 @@ export const sendSignUpEmail = inngest.createFunction(
             const part = response.candidates?.[0]?.content?.parts?.[0];
             const introText = (part && 'text' in part ? part.text : null) || 'Thanks for joining the app'
 
-            // Email sending logic
             const { data: { email, name }} = event;
             return await sendWelcomeEmail({
                 email,
@@ -58,23 +57,20 @@ export const sendSignUpEmail = inngest.createFunction(
 
 export const sendDailyNewsSummary = inngest.createFunction(
     { id: 'daily-news-summary' },
-    [ { event: 'app/send.daily.news' }, { cron: '0 12 * * *' } ],
+    [ { event: 'app/send.daily.news' }, { cron: '30 3 * * *' }],
     async ({ step }) => {
-        // Get all users for news delivery
         const users = await step.run('get-all-users', getAllUsersForNewsEmail)
 
         if(!users || users.length === 0) return { success: false, message: 'No users found for news email' };
 
-        //For each user, get watchlist symbols -> fetch news 
         const results = await step.run('fetch-user-news', async () => {
             const perUser: Array<{ user: User; articles: MarketNewsArticle[] }> = [];
             for (const user of users as User[]) {
                 try {
                     const symbols = await getWatchlistSymbolsByEmail(user.email);
-                    let articles = await getNews(symbols);
+                    let articles = await getNews(symbols.map(s => s.s));
                     // Enforce max 6 articles per user
                     articles = (articles || []).slice(0, 6);
-                    // If still empty, fallback to general
                     if (!articles || articles.length === 0) {
                         articles = await getNews();
                         articles = (articles || []).slice(0, 6);
@@ -88,7 +84,6 @@ export const sendDailyNewsSummary = inngest.createFunction(
             return perUser;
         });
 
-        // Summarize news via AI
         const userNewsSummaries: { user: User; newsContent: string | null }[] = [];
 
         for (const { user, articles } of results) {
@@ -112,7 +107,6 @@ export const sendDailyNewsSummary = inngest.createFunction(
                 }
             }
 
-        // Send the emails
         await step.run('send-news-emails', async () => {
                 await Promise.all(
                     userNewsSummaries.map(async ({ user, newsContent}) => {
