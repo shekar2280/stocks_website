@@ -165,8 +165,23 @@ export const CRYPTO_WIDGET_CONFIG = {
   height: 550,
 };
 
-export const HEATMAP_WIDGET_CONFIG = {
-  dataSource: "NIFTY50",
+type Country =
+  | "India"
+  | "United States"
+  | "United Kingdom"
+  | "Germany"
+  | "Japan";
+
+const MARKET_MAP: Record<Country, string> = {
+  India: "NIFTY50",
+  "United States": "S&P500",
+  "United Kingdom": "FTSE100",
+  Germany: "DAX",
+  Japan: "NIKKEI225",
+};
+
+export const HEATMAP_WIDGET_CONFIG = (country: string) => ({
+  dataSource: MARKET_MAP[country as Country] || "S&P500",
   blockSize: "market_cap_basic",
   blockColor: "change",
   grouping: "sector",
@@ -182,7 +197,7 @@ export const HEATMAP_WIDGET_CONFIG = {
   isMonoSize: false,
   width: "100%",
   height: "600",
-};
+});
 
 export const TOP_STORIES_WIDGET_CONFIG = {
   displayMode: "regular",
