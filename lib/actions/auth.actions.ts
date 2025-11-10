@@ -3,52 +3,80 @@
 import { headers } from "next/headers";
 import { auth } from "../better-auth/auth";
 import { inngest } from "../inngest/client";
+import { connectToDB } from "@/database/mongoose";
+import { ObjectId } from "mongodb";
 
-export const signUpWithEmail = async ({email, password, fullName, country, investmentGoals, riskTolerance, preferredIndustry }: SignUpFormData) => {
-    try {
-        const response = await auth.api.signUpEmail({
-            body: { email, password, name: fullName }
-        })
+export const signUpWithEmail = async ({
+  email,
+  password,
+  fullName,
+  country,
+  investmentGoals,
+  riskTolerance,
+  preferredIndustry,
+}: SignUpFormData) => {
+  try {
+    const response = await auth.api.signUpEmail({
+      body: { email, password, name: fullName },
+    });
 
-        if(response){
-            await inngest.send({
-                name: 'app/user.created',
-                data: {
-                    email,
-                    name: fullName,
-                    country,
-                    investmentGoals,
-                    riskTolerance,
-                    preferredIndustry
-                }
-            })
-        }
+    const userId = response?.user?.id;
+    if (!userId) throw new Error("Missing user ID");
+    const mongoose = await connectToDB();
+    const db = mongoose.connection.db;
 
-        return { success: true, data: response }
-    } catch (e) {
-        console.log('Sign up failed', e);
-        return { success: false, error: 'Sign up failed' }
+    if (!db) throw new Error("Not connected to DB");
+
+    await db.collection("user").updateOne(
+      { _id: new ObjectId(userId) },
+      {
+        $set: {
+          country,
+          investmentGoals,
+          riskTolerance,
+          preferredIndustry,
+        },
+      }
+    );
+
+    if (response) {
+      await inngest.send({
+        name: "app/user.created",
+        data: {
+          email,
+          name: fullName,
+          country,
+          investmentGoals,
+          riskTolerance,
+          preferredIndustry,
+        },
+      });
     }
-}
+    return { success: true, data: response };
+  } catch (e) {
+    console.log("Sign up failed", e);
+    return { success: false, error: "Sign up failed" };
+  }
+};
 
-export const signInWithEmail = async ({email, password }: SignInFormData) => {
-    try {
-        const response = await auth.api.signInEmail({
-            body: { email, password }
-        })
+export const signInWithEmail = async ({ email, password }: SignInFormData) => {
+  try {
+    const response = await auth.api.signInEmail({
+      body: { email, password },
+    });
 
-        return { success: true, data: response }
-    } catch (e) {
-        console.log('Sign in failed', e);
-        return { success: false, error: 'Sign in failed' }
-    }
-}
+    return { success: true, data: response };
+  } catch (e) {
+    console.log("Sign in failed", e);
+    return { success: false, error: "Sign in failed" };
+  }
+};
 
 export const signOut = async () => {
-    try {
-        await auth.api.signOut({ headers: await headers() });
-    } catch (e) {
-        console.log('Sign out failed', e);
-        return { success: false, error: 'Sign out failed' }
-    }
-}
+  try {
+    await auth.api.signOut({ headers: await headers() });
+  } catch (e) {
+    console.log("Sign out failed", e);
+    return { success: false, error: "Sign out failed" };
+  }
+};
