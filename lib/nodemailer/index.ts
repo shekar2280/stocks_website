@@ -19,7 +19,7 @@ export const sendWelcomeEmail = async ({email, name, intro }: WelcomeEmailData) 
     const mailOptions = {
         from: `"Stocksyy" <somashekar528234@gmail.com>`,
         to: email,
-        subject: `Welcome to stocksyy - your stock market toolkit is ready!`,
+        subject: `Welcome to stocksyy 📈`,
         text: 'Thanks for joining stocksyy',
         html: htmlTemplete,
     }

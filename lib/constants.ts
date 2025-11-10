@@ -137,10 +137,12 @@ export const WATCHLIST_OVERVIEW_WIDGET_CONFIG = (
   showChart: true,
 });
 
-export const WATCHLIST_OVERVIEW_WIDGET_CONFIG_MOBILE = (symbols: { s: string; d: string }[]) => ({
+export const WATCHLIST_OVERVIEW_WIDGET_CONFIG_MOBILE = (
+  symbols: { s: string; d: string }[]
+) => ({
   ...WATCHLIST_OVERVIEW_WIDGET_CONFIG(symbols),
-  width: "340",   
-  height: "400",  
+  width: "340",
+  height: "400",
 });
 
 export const TICKER_TAPE_WIDGET_CONFIG = (symbols: string[]) => ({
@@ -165,8 +167,23 @@ export const CRYPTO_WIDGET_CONFIG = {
   height: 550,
 };
 
-export const HEATMAP_WIDGET_CONFIG = {
-  dataSource: "NIFTY50",
+type Country =
+  | "India"
+  | "United States"
+  | "United Kingdom"
+  | "Germany"
+  | "Japan";
+
+const MARKET_MAP: Record<Country, string> = {
+  India: "NIFTY50",
+  "United States": "S&P500",
+  "United Kingdom": "FTSE100",
+  Germany: "DAX",
+  Japan: "NIKKEI225",
+};
+
+export const HEATMAP_WIDGET_CONFIG = (country: string) => ({
+  dataSource: MARKET_MAP[country as Country] || "S&P500",
   blockSize: "market_cap_basic",
   blockColor: "change",
   grouping: "sector",
@@ -182,7 +199,7 @@ export const HEATMAP_WIDGET_CONFIG = {
   isMonoSize: false,
   width: "100%",
   height: "600",
-};
+});
 
 export const TOP_STORIES_WIDGET_CONFIG = {
   displayMode: "regular",
@@ -240,6 +257,74 @@ export const MARKET_DATA_WIDGET_CONFIG = {
   ],
 };
 
+// export const MARKET_DATA_WIDGET_CONFIG = {
+//   title: "Indian Stocks",
+//   width: "100%",
+//   height: 600,
+//   locale: "en",
+//   showSymbolLogo: true,
+//   colorTheme: "dark",
+//   isTransparent: false,
+//   backgroundColor: "#0F0F0F",
+//   symbolsGroups: [
+//     {
+//       name: "Financial",
+//       symbols: [
+//         { name: "NSE:HDFCBANK", displayName: "HDFC Bank" },
+//         { name: "NSE:ICICIBANK", displayName: "ICICI Bank" },
+//         { name: "NSE:INFY", displayName: "Infosys" },
+//         { name: "NSE:TCS", displayName: "TCS" },
+//         { name: "NSE:RELIANCE", displayName: "Reliance Industries" },
+//         { name: "NSE:ITC", displayName: "ITC" },
+//       ],
+//     },
+//     {
+//       name: "Technology",
+//       symbols: [
+//         { name: "NSE:TCS", displayName: "TCS" },
+//         { name: "NSE:INFY", displayName: "Infosys" },
+//         { name: "NSE:WIPRO", displayName: "Wipro" },
+//         { name: "NSE:HCLTECH", displayName: "HCL Technologies" },
+//         { name: "NSE:TECHM", displayName: "Tech Mahindra" },
+//         { name: "NSE:PERSISTENT", displayName: "Persistent Systems" },
+//       ],
+//     },
+//     {
+//       name: "Energy",
+//       symbols: [
+//         { name: "NSE:RELIANCE", displayName: "Reliance Industries" },
+//         { name: "NSE:ONGC", displayName: "ONGC" },
+//         { name: "NSE:BPCL", displayName: "BPCL" },
+//         { name: "NSE:IOC", displayName: "Indian Oil Corporation" },
+//         { name: "NSE:NTPC", displayName: "NTPC" },
+//         { name: "NSE:POWERGRID", displayName: "Power Grid Corp" },
+//       ],
+//     },
+//     {
+//       name: "Automobile",
+//       symbols: [
+//         { name: "NSE:TATAMOTORS", displayName: "Tata Motors" },
+//         { name: "NSE:MARUTI", displayName: "Maruti Suzuki" },
+//         { name: "NSE:BAJAJ-AUTO", displayName: "Bajaj Auto" },
+//         { name: "NSE:EICHERMOT", displayName: "Eicher Motors" },
+//         { name: "NSE:HEROMOTOCO", displayName: "Hero MotoCorp" },
+//         { name: "NSE:TVSMOTOR", displayName: "TVS Motor" },
+//       ],
+//     },
+//     {
+//       name: "FMCG",
+//       symbols: [
+//         { name: "NSE:HINDUNILVR", displayName: "Hindustan Unilever" },
+//         { name: "NSE:ITC", displayName: "ITC" },
+//         { name: "NSE:NESTLEIND", displayName: "Nestle India" },
+//         { name: "NSE:BRITANNIA", displayName: "Britannia Industries" },
+//         { name: "NSE:DABUR", displayName: "Dabur India" },
+//         { name: "NSE:GODREJCP", displayName: "Godrej Consumer Products" },
+//       ],
+//     },
+//   ],
+// };
+
 export const SECTOR_TICKER_TAPE_WIDGET_CONFIG = () => {
   const allSymbols = MARKET_DATA_WIDGET_CONFIG.symbolsGroups.flatMap((group) =>
     group.symbols.map((s) => ({
@@ -256,7 +341,6 @@ export const SECTOR_TICKER_TAPE_WIDGET_CONFIG = () => {
     locale: "en",
   };
 };
-
 
 export const SYMBOL_INFO_WIDGET_CONFIG = (symbol: string) => ({
   symbol: symbol.toUpperCase(),

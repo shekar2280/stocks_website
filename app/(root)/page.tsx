@@ -1,67 +1,24 @@
-import TradingViewWidget from "@/components/TradingViewWidget";
-import { Button } from "@/components/ui/button";
-import {
-  HEATMAP_WIDGET_CONFIG,
-  MARKET_DATA_WIDGET_CONFIG,
-  MARKET_OVERVIEW_WIDGET_CONFIG,
-  SECTOR_TICKER_TAPE_WIDGET_CONFIG,
-  TICKER_TAPE_WIDGET_CONFIG,
-  TOP_STORIES_WIDGET_CONFIG,
-} from "@/lib/constants";
+import { connectToDB } from "@/database/mongoose";
+import { ObjectId } from "mongodb";
+import { auth } from "@/lib/better-auth/auth";
+import { headers } from "next/headers";
+import HomePageWidgets from "@/components/HomePageWidgets";
 
-const scriptUrl = `https://s3.tradingview.com/external-embedding/embed-widget-`;
+export default async function Home() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) return null;
 
-const Home = () => {
-  return (
-    <div className="flex min-h-screen home-wrapper">
-        <TradingViewWidget
-          title=""
-          scriptUrl={`${scriptUrl}ticker-tape.js`}
-          config={SECTOR_TICKER_TAPE_WIDGET_CONFIG()}
-          height={600}
-        />
+  const userId = session.user.id;
 
-      <section className="grid w-full gap-8 home-section">
-        <div className="md:col-span-1 xl:col-span-1">
-          <TradingViewWidget
-            title="Market Overview"
-            scriptUrl={`${scriptUrl}market-overview.js`}
-            config={MARKET_OVERVIEW_WIDGET_CONFIG}
-            height={600}
-            className="custom-chart"
-          />
-        </div>
-
-        <div className="md-col-span xl:col-span-2">
-          <TradingViewWidget
-            title="Stock HeatMap"
-            scriptUrl={`${scriptUrl}stock-heatmap.js`}
-            config={HEATMAP_WIDGET_CONFIG}
-            height={600}
-          />
-        </div>
-      </section>
-
-      <section className="grid w-full gap-8 home-section">
-        <div className="h-full md:col-span-1 xl:col-span-1">
-          <TradingViewWidget
-            scriptUrl={`${scriptUrl}timeline.js`}
-            config={TOP_STORIES_WIDGET_CONFIG}
-            height={600}
-            className="custom-chart"
-          />
-        </div>
-
-        <div className="h-full md:col-span-1 xl:col-span-2">
-          <TradingViewWidget
-            scriptUrl={`${scriptUrl}market-quotes.js`}
-            config={MARKET_DATA_WIDGET_CONFIG}
-            height={600}
-          />
-        </div>
-      </section>
-    </div>
+  const mongoose = await connectToDB();
+  const db = mongoose.connection.db;
+  if(!db) throw new Error("Connection to DB not established");
+  const user = await db.collection("user").findOne(
+    { _id: new ObjectId(userId) },
+    { projection: { country: 1 } }
   );
-};
 
-export default Home;
+  const country = user?.country || "US"; 
+
+  return <HomePageWidgets country={country} />;
+}
