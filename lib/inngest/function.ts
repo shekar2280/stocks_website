@@ -1,8 +1,7 @@
 import { success } from "better-auth";
 import { inngest } from "./client";
 import { NEWS_SUMMARY_EMAIL_PROMPT, PERSONALIZED_WELCOME_EMAIL_PROMPT } from "./prompt";
-import { sendNewsSummaryEmail, sendWelcomeEmail } from "../nodemailer";
-import { userAgent } from "next/server";
+import { sendNewsSummaryEmail, sendWelcomeEmail, sendUpperAlert, sendLowerAlert } from "../nodemailer";
 import { getAllUsersForNewsEmail } from "../actions/user.action";
 import { getWatchlistSymbolsByEmail } from "../actions/watchlist.actions";
 import { getNews } from "../actions/finnhub.actions";
@@ -118,5 +117,51 @@ export const sendDailyNewsSummary = inngest.createFunction(
             })
 
         return { success: true, message: 'Daily news summary emails sent successfully' }
+    }
+)
+
+export const sendUpperAlertEmail = inngest.createFunction(
+    {id: 'send-upper-alert-email'},
+    { event: 'app/stock.upper_alert'},
+    async ({event, step}) => {
+        await step.run('send-upper-alert-email', async () => {
+            const { userEmail, symbol, timestamp, companyName, currentPrice, targetPrice } = event.data;
+            return await sendUpperAlert({
+                userEmail,
+                symbol,
+                timestamp,
+                companyName,
+                currentPrice, 
+                targetPrice,
+            });
+        })
+
+        return {
+            success: true,
+            message: 'Upper target reached'
+        }
+    }
+)
+
+export const sendLowerAlertEmail = inngest.createFunction(
+    {id: 'send-lower-alert-email'},
+    { event: 'app/stock.lower_alert'},
+    async ({event, step}) => {
+        await step.run('send-lower-alert-email', async () => {
+            const { userEmail, symbol, timestamp, companyName, currentPrice, targetPrice } = event.data;
+            return await sendLowerAlert({
+                userEmail,
+                symbol,
+                timestamp,
+                companyName,
+                currentPrice, 
+                targetPrice,
+            });
+        })
+
+        return {
+            success: true,
+            message: 'Lower target reached'
+        }
     }
 )

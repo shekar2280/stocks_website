@@ -1,3 +1,4 @@
+import PriceAlert from "@/components/PriceAlert";
 import TradingViewWidget from "@/components/TradingViewWidget";
 import { Button } from "@/components/ui/button";
 import WatchlistButton from "@/components/WatchlistButton";
@@ -64,6 +65,12 @@ export default async function StockDetails({ params }: StockDetailsProps) {
               companyName={companyName}
               symbol={symbol}
             />
+            <PriceAlert
+              symbol={symbol}
+              userId={user.id}
+              userEmail={userEmail}
+              companyName={companyName}
+            />
             <TradingViewWidget
               title=""
               scriptUrl={`${scriptUrl}technical-analysis.js`}
@@ -81,6 +88,7 @@ export default async function StockDetails({ params }: StockDetailsProps) {
         />
 
         <TradingViewWidget
+          className="hidden md:block"
           title=""
           scriptUrl={`${scriptUrl}advanced-chart.js`}
           config={BASELINE_WIDGET_CONFIG(symbol)}
@@ -93,6 +101,13 @@ export default async function StockDetails({ params }: StockDetailsProps) {
           userEmail={userEmail}
           companyName={companyName}
           symbol={symbol}
+        />
+
+        <PriceAlert
+          symbol={symbol}
+          userId={user.id}
+          userEmail={userEmail}
+          companyName={companyName}
         />
 
         <TradingViewWidget

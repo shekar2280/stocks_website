@@ -181,3 +181,15 @@ export const searchStocks = cache(async (query?: string, email?: string): Promis
   }
 });
 
+export async function getCurrentPrice(symbol: string): Promise<number | null> {
+  try {
+    const token = process.env.FINNHUB_API_KEY ?? process.env.NEXT_PUBLIC_FINNHUB_API_KEY;
+    if (!token) throw new Error("FINNHUB API key not configured");
+    const url = `${FINNHUB_BASE_URL}/quote?symbol=${encodeURIComponent(symbol)}&token=${token}`;
+    const data = await fetchJSON<{ c: number }>(url, 10);
+    return typeof data.c === "number" ? data.c : null; // c = current price
+  } catch (err) {
+    console.error("getCurrentPrice error:", err);
+    return null;
+  }
+}
