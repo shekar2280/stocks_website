@@ -86,69 +86,69 @@ export default function PriceAlert({
     loadExistingAlert();
   }, [userId, symbol]);
 
-  useEffect(() => {
-    const update = async () => {
-      const p = await fetchPrice(symbol);
-      setPrice(p);
+  // useEffect(() => {
+  //   const update = async () => {
+  //     const p = await fetchPrice(symbol);
+  //     setPrice(p);
 
-      if (p !== null) {
-        if (upperActive && upperTarget && p >= upperTarget) {
-          alert(`${symbol} hit upper limit ${upperTarget}`);
+  //     if (p !== null) {
+  //       if (upperActive && upperTarget && p >= upperTarget) {
+  //         alert(`${symbol} hit upper limit ${upperTarget}`);
 
-          await fetch("/api/alerts", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              tpye: "upper",
-              userEmail,
-              symbol,
-              companyName,
-              currentPrice: p,
-              targetPrice: upperTarget,
-              timestamp: new Date().toISOString(),
-            }),
-          });
+  //         await fetch("/api/alerts", {
+  //           method: "POST",
+  //           headers: { "Content-Type": "application/json" },
+  //           body: JSON.stringify({
+  //             tpye: "upper",
+  //             userEmail,
+  //             symbol,
+  //             companyName,
+  //             currentPrice: p,
+  //             targetPrice: upperTarget,
+  //             timestamp: new Date().toISOString(),
+  //           }),
+  //         });
 
-          await deleteAlert();
-          setUpperActive(false);
-          setLowerActive(false);
-          setUpperTarget(null);
-          setLowerTarget(null);
-          setUpperInput("");
-          setLowerInput("");
-        }
-        if (lowerActive && lowerTarget && p <= lowerTarget) {
-          alert(`${symbol} hit lower limit ${lowerTarget}`);
+  //         await deleteAlert();
+  //         setUpperActive(false);
+  //         setLowerActive(false);
+  //         setUpperTarget(null);
+  //         setLowerTarget(null);
+  //         setUpperInput("");
+  //         setLowerInput("");
+  //       }
+  //       if (lowerActive && lowerTarget && p <= lowerTarget) {
+  //         alert(`${symbol} hit lower limit ${lowerTarget}`);
 
-          await fetch("/api/alerts", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              type:"lower",
-              userEmail,
-              symbol,
-              companyName,
-              currentPrice: p,
-              targetPrice: upperTarget,
-              timestamp: new Date().toISOString(),
-            }),
-          });
+  //         await fetch("/api/alerts", {
+  //           method: "POST",
+  //           headers: { "Content-Type": "application/json" },
+  //           body: JSON.stringify({
+  //             type:"lower",
+  //             userEmail,
+  //             symbol,
+  //             companyName,
+  //             currentPrice: p,
+  //             targetPrice: upperTarget,
+  //             timestamp: new Date().toISOString(),
+  //           }),
+  //         });
 
-          await deleteAlert();
-          setLowerActive(false);
-          setUpperActive(false);
-          setLowerTarget(null);
-          setUpperTarget(null);
-          setLowerInput("");
-          setUpperInput("");
-        }
-      }
-    };
+  //         await deleteAlert();
+  //         setLowerActive(false);
+  //         setUpperActive(false);
+  //         setLowerTarget(null);
+  //         setUpperTarget(null);
+  //         setLowerInput("");
+  //         setUpperInput("");
+  //       }
+  //     }
+  //   };
 
-    update();
-    const id = setInterval(update, 15000);
-    return () => clearInterval(id);
-  }, [userEmail, symbol, upperTarget, lowerTarget, upperActive, lowerActive]);
+  //   update();
+  //   const id = setInterval(update, 15000);
+  //   return () => clearInterval(id);
+  // }, [userEmail, symbol, upperTarget, lowerTarget, upperActive, lowerActive]);
 
   return (
     <div className="border border-gray-700 rounded-2xl p-4 shadow-md bg-[#0f0f0f] flex flex-col gap-3">
