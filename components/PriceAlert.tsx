@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { inngest } from "@/lib/inngest/client";
 
 async function fetchPrice(symbol: string): Promise<number | null> {
   const res = await fetch(`/api/price?symbol=${symbol}`);
@@ -34,7 +33,7 @@ export default function PriceAlert({
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        userId: userId,
+        userId,
         symbol,
         upperTarget: upper ?? null,
         lowerTarget: lower ?? null,
@@ -47,6 +46,30 @@ export default function PriceAlert({
       method: "DELETE",
     });
   };
+
+  const resetAlerts = () => {
+    setUpperActive(false);
+    setLowerActive(false);
+    setUpperTarget(null);
+    setLowerTarget(null);
+    setUpperInput("");
+    setLowerInput("");
+  };
+
+  function isUSMarketOpen(): boolean {
+    const now = new Date();
+    const utcDay = now.getUTCDay(); // 0 Sun → 6 Sat
+    if (utcDay === 0 || utcDay === 6) return false;
+
+    const utcHour = now.getUTCHours();
+    const utcMin = now.getUTCMinutes();
+    const total = utcHour * 60 + utcMin;
+
+    const open = 14 * 60 + 30; // 14:30 UTC
+    const close = 21 * 60; // 21:00 UTC
+
+    return total >= open && total < close;
+  }
 
   const handleUpperAlert = async () => {
     if (!upperInput) return;
@@ -86,69 +109,69 @@ export default function PriceAlert({
     loadExistingAlert();
   }, [userId, symbol]);
 
-  // useEffect(() => {
-  //   const update = async () => {
-  //     const p = await fetchPrice(symbol);
-  //     setPrice(p);
+  useEffect(() => {
+    const update = async () => {
+      const p = await fetchPrice(symbol);
+      setPrice(p);
+      if (p === null) return;
 
-  //     if (p !== null) {
-  //       if (upperActive && upperTarget && p >= upperTarget) {
-  //         alert(`${symbol} hit upper limit ${upperTarget}`);
+      if (upperActive && upperTarget && p >= upperTarget) {
+        await fetch("/api/alerts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "upper",
+            userEmail,
+            symbol,
+            companyName,
+            currentPrice: p,
+            targetPrice: upperTarget,
+            timestamp: new Date().toISOString(),
+          }),
+        });
 
-  //         await fetch("/api/alerts", {
-  //           method: "POST",
-  //           headers: { "Content-Type": "application/json" },
-  //           body: JSON.stringify({
-  //             tpye: "upper",
-  //             userEmail,
-  //             symbol,
-  //             companyName,
-  //             currentPrice: p,
-  //             targetPrice: upperTarget,
-  //             timestamp: new Date().toISOString(),
-  //           }),
-  //         });
+        await deleteAlert();
+        resetAlerts();
+      }
 
-  //         await deleteAlert();
-  //         setUpperActive(false);
-  //         setLowerActive(false);
-  //         setUpperTarget(null);
-  //         setLowerTarget(null);
-  //         setUpperInput("");
-  //         setLowerInput("");
-  //       }
-  //       if (lowerActive && lowerTarget && p <= lowerTarget) {
-  //         alert(`${symbol} hit lower limit ${lowerTarget}`);
+      if (lowerActive && lowerTarget && p <= lowerTarget) {
+        await fetch("/api/alerts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "lower",
+            userEmail,
+            symbol,
+            companyName,
+            currentPrice: p,
+            targetPrice: lowerTarget,
+            timestamp: new Date().toISOString(),
+          }),
+        });
 
-  //         await fetch("/api/alerts", {
-  //           method: "POST",
-  //           headers: { "Content-Type": "application/json" },
-  //           body: JSON.stringify({
-  //             type:"lower",
-  //             userEmail,
-  //             symbol,
-  //             companyName,
-  //             currentPrice: p,
-  //             targetPrice: upperTarget,
-  //             timestamp: new Date().toISOString(),
-  //           }),
-  //         });
+        await deleteAlert();
+        resetAlerts();
+      }
+    };
 
-  //         await deleteAlert();
-  //         setLowerActive(false);
-  //         setUpperActive(false);
-  //         setLowerTarget(null);
-  //         setUpperTarget(null);
-  //         setLowerInput("");
-  //         setUpperInput("");
-  //       }
-  //     }
-  //   };
+    const tick = () => {
+      if (!isUSMarketOpen()) return;
+      update();
+    };
 
-  //   update();
-  //   const id = setInterval(update, 15000);
-  //   return () => clearInterval(id);
-  // }, [userEmail, symbol, upperTarget, lowerTarget, upperActive, lowerActive]);
+    tick();
+
+    const id = setInterval(tick, 300000);
+    return () => clearInterval(id);
+  }, [
+    symbol,
+    userEmail,
+    companyName,
+    upperActive,
+    lowerActive,
+    upperTarget,
+    lowerTarget,
+  ]);
 
   return (
     <div className="border border-gray-700 rounded-2xl p-4 shadow-md bg-[#0f0f0f] flex flex-col gap-3">
@@ -193,8 +216,11 @@ export default function PriceAlert({
           {lowerActive ? "Alert set" : "Set Lower Alert"}
         </Button>
       </div>
-
-      <div className="alert-price">Current Price: {price ?? "—"}</div>
+      {price ? (
+        <div className="alert-price">Current Price: {price ?? "—"}</div>
+      ) : (
+        ""
+      )}
     </div>
   );
 }
