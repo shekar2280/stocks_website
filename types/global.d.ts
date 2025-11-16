@@ -224,6 +224,21 @@ declare global {
     threshold: number;
     changePercent?: number;
   };
+
+  export type CompanyProfile = {
+    country?: string;
+    currency?: string;
+    exchange?: string;
+    ipo?: string;
+    marketCapitalization?: number;
+    name?: string;
+    phone?: string;
+    shareOutstanding?: number;
+    ticker?: string;
+    weburl?: string;
+    logo?: string;
+    finnhubIndustry?: string;
+  };
 }
 
 export {};

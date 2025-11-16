@@ -1,4 +1,3 @@
-// app/(root)/watchlist/page.tsx
 import { auth } from "@/lib/better-auth/auth";
 import { headers } from "next/headers";
 import TradingViewWidget from "@/components/TradingViewWidget";
@@ -10,6 +9,7 @@ import {
   WATCHLIST_OVERVIEW_WIDGET_CONFIG_MOBILE,
 } from "@/lib/constants";
 import WatchlistList from "@/components/WatchlistList";
+import { getCompanyProfile } from "@/lib/actions/finnhub.actions";
 
 const scriptUrl = "https://s3.tradingview.com/external-embedding/embed-widget-";
 
@@ -24,6 +24,12 @@ const WatchlistPage = async () => {
   }
 
   const symbols = await getWatchlistSymbolsByEmail(user.email);
+
+  const profiles: Record<string, any> = {};
+
+  for (const item of symbols) {
+    profiles[item.s] = await getCompanyProfile(item.s);
+  }
 
   const tickerSymbols = symbols.map((sym) => sym.s);
 
@@ -64,7 +70,7 @@ const WatchlistPage = async () => {
           <h2 className="text-lg font-semibold mb-4 text-white">
             Your Watchlist
           </h2>
-          <WatchlistList userEmail={user.email} symbols={symbols} />
+          <WatchlistList userEmail={user.email} symbols={symbols} profiles={profiles} />
         </div>
       </div>
     </div>
