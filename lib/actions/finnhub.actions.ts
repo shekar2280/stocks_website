@@ -4,6 +4,7 @@ import { POPULAR_STOCK_SYMBOLS } from '@/lib/constants';
 import { cache } from 'react';
 import { formatArticle, getDateRange, validateArticle } from '../utils';
 import { getWatchlistSymbolsByEmail } from './watchlist.actions';
+import { redis } from '../redis';
 
 const FINNHUB_BASE_URL = 'https://finnhub.io/api/v1';
 const NEXT_PUBLIC_FINNHUB_API_KEY = process.env.NEXT_PUBLIC_FINNHUB_API_KEY ?? '';
@@ -193,3 +194,42 @@ export async function getCurrentPrice(symbol: string): Promise<number | null> {
     return null;
   }
 }
+
+export async function fetchCompanyProfile(
+  symbol: string
+): Promise<CompanyProfile | null> {
+  try {
+    const token =
+      process.env.FINNHUB_API_KEY ?? process.env.NEXT_PUBLIC_FINNHUB_API_KEY;
+    if (!token) throw new Error("FINNHUB API key not configured");
+
+    const url = `${FINNHUB_BASE_URL}/stock/profile2?symbol=${encodeURIComponent(
+      symbol
+    )}&token=${token}`;
+
+    const data = await fetchJSON<CompanyProfile>(url, 10);
+    return data;
+  } catch (err) {
+    console.error("fetchCompanyProfile error:", err);
+    return null;
+  }
+}
+
+const TTL = 86400;
+
+export async function getCompanyProfile(
+  symbol: string
+): Promise<CompanyProfile | null> {
+  const key = `profile:${symbol}`;
+
+  const cached = await redis.get<CompanyProfile>(key);
+  if (cached) return cached;
+
+  const fresh = await fetchCompanyProfile(symbol);
+  if (fresh) {
+    await redis.set(key, fresh, { ex: TTL });
+  }
+
+  return fresh;
+}
+
