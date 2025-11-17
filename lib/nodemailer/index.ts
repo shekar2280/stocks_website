@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import {
   NEWS_SUMMARY_EMAIL_TEMPLATE,
+  RESET_PASSWORD_EMAIL_TEMPLATE,
   STOCK_ALERT_LOWER_EMAIL_TEMPLATE,
   STOCK_ALERT_UPPER_EMAIL_TEMPLATE,
   WELCOME_EMAIL_TEMPLATE,
@@ -108,6 +109,26 @@ export const sendLowerAlert = async ({
     to: userEmail,
     subject: `🐻 ${companyName} - ${symbol} has reached your price threshold`,
     text: `${companyName} reachead your lower target`,
+    html: htmlTemplate,
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
+export const sendResetPasswordEmail = async ({
+  email,
+  url,
+}: {
+  email: string;
+  url: string;
+}) => {
+  const htmlTemplate = RESET_PASSWORD_EMAIL_TEMPLATE.replace("{{url}}", url);
+
+  const mailOptions = {
+    from: `"Stocksyy" <${process.env.NODEMAILER_EMAIL}>`,
+    to: email,
+    subject: "Reset your password",
+    text: `Reset your password: ${url}`,
     html: htmlTemplate,
   };
 

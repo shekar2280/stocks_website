@@ -25,7 +25,7 @@ declare global {
   type FormInputProps = {
     name: string;
     label: string;
-    placeholder: string;
+    placeholder?: string;
     type?: string;
     register: UseFormRegister;
     error?: FieldError;
@@ -42,7 +42,7 @@ declare global {
   type SelectFieldProps = {
     name: string;
     label: string;
-    placeholder: string;
+    placeholder?: string;
     options: readonly Option[];
     control: Control;
     error?: FieldError;

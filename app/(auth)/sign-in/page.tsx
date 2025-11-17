@@ -65,11 +65,19 @@ const SignIn = () => {
           name="password"
           label="Password"
           placeholder="Enter your password"
-          type="password" 
+          type="password"
           register={register}
           error={errors.password}
           validation={{ required: "Password is required", minLength: 8 }}
         />
+        <div className="text-right">
+          <a
+            href="/forgot-password"
+            className="text-sm text-yellow-500 hover:underline"
+          >
+            Forgot password?
+          </a>
+        </div>
 
         <Button
           type="submit"
