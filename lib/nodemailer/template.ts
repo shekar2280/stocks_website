@@ -1217,3 +1217,11 @@ export const INACTIVE_USER_REMINDER_EMAIL_TEMPLATE = `<!DOCTYPE html>
     </table>
 </body>
 </html>`;
+
+export const RESET_PASSWORD_EMAIL_TEMPLATE = `
+  <div style="font-family:sans-serif;padding:20px">
+    <h2>Reset your password</h2>
+    <p>Click the link below to set a new password:</p>
+    <a href="{{url}}" style="color:#2563eb">Reset Password</a>
+  </div>
+`;

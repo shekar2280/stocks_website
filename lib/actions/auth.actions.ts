@@ -80,3 +80,27 @@ export const signOut = async () => {
     return { success: false, error: "Sign out failed" };
   }
 };
+
+export const updateUserProfile = async (userId: string, data: any) => {
+  const mongoose = await connectToDB();
+  const db = mongoose.connection.db;
+  if (!db) throw new Error("DB not connected");
+
+  await db.collection("user").updateOne(
+    { _id: new ObjectId(userId) },
+    {
+      $set: {
+        ...(data.fullName && { name: data.fullName }),
+        ...(data.country && { country: data.country }),
+        ...(data.investmentGoals && { investmentGoals: data.investmentGoals }),
+        ...(data.riskTolerance && { riskTolerance: data.riskTolerance }),
+        ...(data.preferredIndustry && {
+          preferredIndustry: data.preferredIndustry,
+        }),
+      },
+    }
+  );
+
+  return { success: true };
+};
+
