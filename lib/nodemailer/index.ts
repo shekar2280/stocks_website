@@ -118,9 +118,11 @@ export const sendLowerAlert = async ({
 export const sendResetPasswordEmail = async ({
   email,
   url,
+  token,
 }: {
   email: string;
   url: string;
+  token: string;
 }) => {
   const htmlTemplate = RESET_PASSWORD_EMAIL_TEMPLATE.replace("{{url}}", url);
 
