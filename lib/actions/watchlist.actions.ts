@@ -45,7 +45,7 @@ export async function getWatchlistSymbolsByUserId(
       })
     );
   } catch (err) {
-    console.error("getWatchlistSymbolsByEmail error:", err);
+    console.error("getWatchlistSymbolsByUserId error:", err);
     return [];
   }
 }
