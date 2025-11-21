@@ -1,9 +1,9 @@
-import { House, Search, Star } from "lucide-react";
-import { getWatchlistSymbolsByEmail } from "./actions/watchlist.actions";
+import { House, Search, Star, Wallet } from "lucide-react"
 
 export const NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: House },
   { href: "/watchlist", label: "Watchlist", icon: Star },
+  { href: "/wallet", label: "Wallet", icon: Wallet },
   { href: "/search", label: "Search", icon: Search },
 ];
 
@@ -137,10 +137,12 @@ export const WATCHLIST_OVERVIEW_WIDGET_CONFIG = (
   showChart: true,
 });
 
-export const WATCHLIST_OVERVIEW_WIDGET_CONFIG_MOBILE = (symbols: { s: string; d: string }[]) => ({
+export const WATCHLIST_OVERVIEW_WIDGET_CONFIG_MOBILE = (
+  symbols: { s: string; d: string }[]
+) => ({
   ...WATCHLIST_OVERVIEW_WIDGET_CONFIG(symbols),
-  width: "340",   
-  height: "400",  
+  width: "340",
+  height: "400",
 });
 
 export const TICKER_TAPE_WIDGET_CONFIG = (symbols: string[]) => ({
@@ -271,7 +273,6 @@ export const SECTOR_TICKER_TAPE_WIDGET_CONFIG = () => {
     locale: "en",
   };
 };
-
 
 export const SYMBOL_INFO_WIDGET_CONFIG = (symbol: string) => ({
   symbol: symbol.toUpperCase(),
