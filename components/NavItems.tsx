@@ -7,10 +7,10 @@ import SearchCommand from "@/components/SearchCommand";
 
 const NavItems = ({
   initialStocks,
-  userEmail,
+  userId,
 }: {
   initialStocks: StockWithWatchlistStatus[];
-  userEmail?: string | null;
+  userId?: string | null;
 }) => {
   const pathname = usePathname();
 
@@ -31,7 +31,7 @@ const NavItems = ({
                 renderAs="text"
                 label="Search"
                 initialStocks={initialStocks}
-                userEmail={userEmail}
+                userId={userId}
               />
             </li>
           );

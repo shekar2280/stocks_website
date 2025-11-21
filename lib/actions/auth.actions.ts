@@ -82,6 +82,10 @@ export const signOut = async () => {
 };
 
 export const updateUserProfile = async (userId: string, data: any) => {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user) throw new Error("Unauthorized");
+  if (userId !== session.user.id) throw new Error("Invalid user");
+
   const mongoose = await connectToDB();
   const db = mongoose.connection.db;
   if (!db) throw new Error("DB not connected");
@@ -103,4 +107,3 @@ export const updateUserProfile = async (userId: string, data: any) => {
 
   return { success: true };
 };
-

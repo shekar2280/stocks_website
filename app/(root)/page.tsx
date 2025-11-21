@@ -1,13 +1,3 @@
-import TradingViewWidget from "@/components/TradingViewWidget";
-import { Button } from "@/components/ui/button";
-import {
-  HEATMAP_WIDGET_CONFIG,
-  MARKET_DATA_WIDGET_CONFIG,
-  MARKET_OVERVIEW_WIDGET_CONFIG,
-  SECTOR_TICKER_TAPE_WIDGET_CONFIG,
-  TICKER_TAPE_WIDGET_CONFIG,
-  TOP_STORIES_WIDGET_CONFIG,
-} from "@/lib/constants";
 import { connectToDB } from "@/database/mongoose";
 import { ObjectId } from "mongodb";
 import { auth } from "@/lib/better-auth/auth";

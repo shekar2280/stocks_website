@@ -3,6 +3,8 @@
 import { Stock } from "@/database/models/stock.models";
 import { Watchlist } from "@/database/models/watchlist.models";
 import { connectToDB } from "@/database/mongoose";
+import { auth } from "../better-auth/auth";
+import { headers } from "next/headers";
 
 function normalizeWatchlistItemToTradingView(item: {
   symbol?: string;
@@ -16,24 +18,19 @@ function normalizeWatchlistItemToTradingView(item: {
   return { s: symbol, d: display || symbol };
 }
 
-export async function getWatchlistSymbolsByEmail(
-  email: string
+export async function getWatchlistSymbolsByUserId(
+  userId: string
 ): Promise<Array<{ s: string; d: string }>> {
-  if (!email) return [];
+  const session = await auth.api.getSession({ headers: await headers() });
+  const realUser = session?.user;
+  if (!realUser) throw new Error("Unauthorized");
+
+  if (userId !== realUser.id) throw new Error("Invalid user");
 
   try {
     const mongoose = await connectToDB();
     const db = mongoose.connection.db;
     if (!db) throw new Error("MongoDB connection not found");
-
-    const user = await db
-      .collection("user")
-      .findOne<{ _id?: unknown; id?: string; email?: string }>({ email });
-
-    if (!user) return [];
-
-    const userId = (user.id as string) || String(user._id || "");
-    if (!userId) return [];
 
     const items = (await Watchlist.find({ userId })
       .populate("stockId", "symbol company")
@@ -54,28 +51,29 @@ export async function getWatchlistSymbolsByEmail(
 }
 
 export async function addToWatchlist(
-  email: string,
+  userId: string,
   symbol: string,
   company: string
 ) {
-  if (!email || !symbol) throw new Error("Missing email or symbol");
+  const session = await auth.api.getSession({ headers: await headers() });
+  const realUser = session?.user;
+  if (!realUser) throw new Error("Unauthorized");
+
+  if (userId !== realUser.id) throw new Error("Invalid user");
+
+  if (!userId || !symbol) throw new Error("Missing userId or symbol");
   const mongoose = await connectToDB();
   const db = mongoose.connection.db;
 
   if (!db) throw new Error("MongoDB connection not found");
 
-  const user = await db.collection("user").findOne({ email });
-
-  if (!user) throw new Error("User not found");
-  const userId = user.id || String(user._id || "");
-
   const stock = await Stock.findOneAndUpdate(
     { symbol },
-    { symbol, company, exchange: "UNKNOWN" }, 
+    { symbol, company, exchange: "UNKNOWN" },
     { upsert: true, new: true }
   );
 
-   await Watchlist.findOneAndUpdate(
+  await Watchlist.findOneAndUpdate(
     { userId, stockId: stock._id },
     { userId, stockId: stock._id, addedAt: new Date() },
     { upsert: true, new: true }
@@ -84,17 +82,18 @@ export async function addToWatchlist(
   return { success: true };
 }
 
-export async function removeFromWatchlist(email: string, symbol: string) {
-  if (!email || !symbol) throw new Error("Missing email or symbol");
+export async function removeFromWatchlist(userId: string, symbol: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  const realUser = session?.user;
+  if (!realUser) throw new Error("Unauthorized");
+
+  if (userId !== realUser.id) throw new Error("Invalid user");
+
+  if (!userId || !symbol) throw new Error("Missing userId or symbol");
   const mongoose = await connectToDB();
   const db = mongoose.connection.db;
 
   if (!db) throw new Error("MongoDB connection not found");
-
-  const user = await db.collection("user").findOne({ email });
-
-  if (!user) throw new Error("User not found");
-  const userId = user.id || String(user._id || "");
 
   const stock = await Stock.findOne({ symbol });
   if (!stock) return { success: true };

@@ -33,7 +33,6 @@ export default async function StockDetails({ params }: StockDetailsProps) {
       </p>
     );
   }
-  const userEmail = user.email;
 
   const formatTradingViewSymbol = (sym: string) => {
     if (!sym) return "";
@@ -61,14 +60,14 @@ export default async function StockDetails({ params }: StockDetailsProps) {
           />
           <div className="space-y-2 lg:hidden mt-3">
             <WatchlistButton
-              userEmail={userEmail}
+              userId={user.id}
               companyName={companyName}
               symbol={symbol}
             />
             <PriceAlert
               symbol={symbol}
               userId={user.id}
-              userEmail={userEmail}
+              userEmail={user.email}
               companyName={companyName}
             />
             <TradingViewWidget
@@ -98,7 +97,7 @@ export default async function StockDetails({ params }: StockDetailsProps) {
 
       <section className="rounded-2xl shadow-md p-6 hidden lg:flex flex-col space-y-5">
         <WatchlistButton
-          userEmail={userEmail}
+          userId={user.id}
           companyName={companyName}
           symbol={symbol}
         />
@@ -106,7 +105,7 @@ export default async function StockDetails({ params }: StockDetailsProps) {
         <PriceAlert
           symbol={symbol}
           userId={user.id}
-          userEmail={userEmail}
+          userEmail={user.email}
           companyName={companyName}
         />
 

@@ -4,7 +4,7 @@ interface SearchCommandProps {
   renderAs?: "text" | "button";
   label?: string;
   initialStocks: StockWithWatchlistStatus[];
-  userEmail?: string | null;
+  userId?: string | null;
 }
 
 import { useEffect, useState } from "react";
@@ -21,7 +21,7 @@ import { searchStocks } from "@/lib/actions/finnhub.actions";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
   addToWatchlist,
-  getWatchlistSymbolsByEmail,
+  getWatchlistSymbolsByUserId,
   removeFromWatchlist,
 } from "@/lib/actions/watchlist.actions";
 import { useRouter } from "next/navigation";
@@ -30,7 +30,7 @@ export default function SearchCommand({
   renderAs = "button",
   label = "Add stock",
   initialStocks,
-  userEmail,
+  userId,
 }: SearchCommandProps) {
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -41,11 +41,15 @@ export default function SearchCommand({
   const router = useRouter();
 
   useEffect(() => {
-  if (!userEmail) return;
+  if (!userId) {
+  alert("Please log in to save to your watchlist.");
+  return;
+}
+
 
   const fetchWatchlist = async () => {
     try {
-      const res = await getWatchlistSymbolsByEmail(userEmail);
+      const res = await getWatchlistSymbolsByUserId(userId);
       const watchlistSet = new Set(res.map((i) => i.s));
 
       setStocks(prev =>
@@ -60,7 +64,7 @@ export default function SearchCommand({
   };
 
   fetchWatchlist();
-}, [userEmail]);
+}, [userId]);
 
   const isSearchMode = !!searchTerm.trim();
   const uniqueStocks = Array.from(
@@ -175,17 +179,17 @@ export default function SearchCommand({
                         e.preventDefault();
                         e.stopPropagation();
 
-                        if (!userEmail) {
+                        if (!userId) {
                           alert("Please log in to save to your watchlist.");
                           return;
                         }
 
                         try {
                           if (stock.isInWatchlist) {
-                            await removeFromWatchlist(userEmail, stock.symbol);
+                            await removeFromWatchlist(userId, stock.symbol);
                           } else {
                             await addToWatchlist(
-                              userEmail,
+                              userId,
                               stock.symbol,
                               stock.name
                             );

@@ -4,29 +4,29 @@ import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import {
     addToWatchlist,
-  getWatchlistSymbolsByEmail,
+  getWatchlistSymbolsByUserId,
   removeFromWatchlist,
 } from "@/lib/actions/watchlist.actions";
 
 interface WatchlistButtonProps {
-  userEmail: string;
+  userId: string;
   companyName: string;
   symbol: string;
 }
 
 export default function WatchlistButton({
-  userEmail,
+  userId,
   companyName,
   symbol,
 }: WatchlistButtonProps) {
   const [isInWatchlist, setIsInWatchlist] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (!userEmail) return;
+    if (!userId) return;
 
     const fetchWatchlist = async () => {
       try {
-        const res = await getWatchlistSymbolsByEmail(userEmail);
+        const res = await getWatchlistSymbolsByUserId(userId);
         const watchlistSet = new Set(res.map((i) => i.s));
         setIsInWatchlist(watchlistSet.has(symbol));
       } catch (error) {
@@ -36,20 +36,20 @@ export default function WatchlistButton({
     };
 
     fetchWatchlist();
-  }, [userEmail, symbol]);
+  }, [userId, symbol]);
 
   const handleClick = async () => {
-    if (!userEmail) {
+    if (!userId) {
       alert("Please log in to manage your watchlist.");
       return;
     }
 
     try {
       if (isInWatchlist) {
-        await removeFromWatchlist(userEmail, symbol);
+        await removeFromWatchlist(userId, symbol);
         setIsInWatchlist(false);
       } else {
-        await addToWatchlist(userEmail, symbol, companyName);
+        await addToWatchlist(userId, symbol, companyName);
         setIsInWatchlist(true);
       }
     } catch (error) {

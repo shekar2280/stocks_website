@@ -16,10 +16,11 @@ const Header = async ({ user }: { user: User }) => {
                     <Image src="/assets/images/stocksy_logo1.png" alt="Stocksy logo" width={180} height={42} className="h-8 w-auto cursor-pointer" />
                 </Link>
                 <nav className="hidden sm:block">
-                    <NavItems  userEmail={user?.email} initialStocks={plainStocks} />
+                    <NavItems  userId={user.id} initialStocks={plainStocks} />
                 </nav>
 
-                <UserDropdown user={user} initialStocks={plainStocks} />
+                <UserDropdown user={user} initialStocks={plainStocks}
+                />
             </div>
         </header>
     )

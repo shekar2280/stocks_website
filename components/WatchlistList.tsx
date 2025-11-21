@@ -6,19 +6,19 @@ import { removeFromWatchlist } from "@/lib/actions/watchlist.actions";
 import { useRouter } from "next/navigation";
 
 interface WatchlistListProps {
-  userEmail: string;
+  userId: string;
   symbols: { s: string; d: string }[];
   profiles: Record<string, any>;
 }
 
 export default function WatchlistList({
-  userEmail,
+  userId,
   symbols,
   profiles = {},
 }: WatchlistListProps) {
   const router = useRouter();
   const handleDelete = async (symbol: string) => {
-    await removeFromWatchlist(userEmail, symbol);
+    await removeFromWatchlist(userId, symbol);
     router.refresh();
   };
 
