@@ -3,8 +3,11 @@
 import { POPULAR_STOCK_SYMBOLS } from '@/lib/constants';
 import { cache } from 'react';
 import { formatArticle, getDateRange, validateArticle } from '../utils';
-import { getWatchlistSymbolsByEmail } from './watchlist.actions';
+
 import { redis } from '../redis';
+import { getWatchlistSymbolsByUserId } from './watchlist.actions';
+import { auth } from '../better-auth/auth';
+import { headers } from 'next/headers';
 
 const FINNHUB_BASE_URL = 'https://finnhub.io/api/v1';
 const NEXT_PUBLIC_FINNHUB_API_KEY = process.env.NEXT_PUBLIC_FINNHUB_API_KEY ?? '';
@@ -101,7 +104,13 @@ export async function getNews(symbols?: string[]): Promise<MarketNewsArticle[]> 
 }
 
 
-export const searchStocks = cache(async (query?: string, email?: string): Promise<StockWithWatchlistStatus[]> => {
+export const searchStocks = cache(async (query?: string, userId?: string): Promise<StockWithWatchlistStatus[]> => {
+  const session = await auth.api.getSession({ headers: await headers() });
+  const realUserId = session?.user?.id;
+
+  // Ignore the userId coming from client
+  const safeUserId = realUserId ?? undefined;
+  
   try {
     const token = process.env.FINNHUB_API_KEY ?? process.env.NEXT_PUBLIC_FINNHUB_API_KEY;
     if (!token) {
@@ -152,7 +161,9 @@ export const searchStocks = cache(async (query?: string, email?: string): Promis
     }
 
     // ✅ Fetch the user's watchlist symbols (if logged in)
-    const watchlistSymbols = email ? await getWatchlistSymbolsByEmail(email) : [];
+    const watchlistSymbols = safeUserId
+    ? await getWatchlistSymbolsByUserId(safeUserId)
+    : [];
 
     // ✅ Map results and mark isInWatchlist
     const mapped: StockWithWatchlistStatus[] = results

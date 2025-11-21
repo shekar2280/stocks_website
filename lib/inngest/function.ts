@@ -3,9 +3,9 @@ import { inngest } from "./client";
 import { NEWS_SUMMARY_EMAIL_PROMPT, PERSONALIZED_WELCOME_EMAIL_PROMPT } from "./prompt";
 import { sendNewsSummaryEmail, sendWelcomeEmail, sendUpperAlert, sendLowerAlert } from "../nodemailer";
 import { getAllUsersForNewsEmail } from "../actions/user.action";
-import { getWatchlistSymbolsByEmail } from "../actions/watchlist.actions";
 import { getNews } from "../actions/finnhub.actions";
 import { getFormattedTodayDate } from "../utils";
+import { getWatchlistSymbolsByUserId } from "../actions/watchlist.actions";
 
 export const sendSignUpEmail = inngest.createFunction(
     {id: 'sign-up-email'},
@@ -66,7 +66,7 @@ export const sendDailyNewsSummary = inngest.createFunction(
             const perUser: Array<{ user: User; articles: MarketNewsArticle[] }> = [];
             for (const user of users as User[]) {
                 try {
-                    const symbols = await getWatchlistSymbolsByEmail(user.email);
+                    const symbols = await getWatchlistSymbolsByUserId(user.id);
                     let articles = await getNews(symbols.map(s => s.s));
                     // Enforce max 6 articles per user
                     articles = (articles || []).slice(0, 6);
