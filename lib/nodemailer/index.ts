@@ -1,11 +1,14 @@
 import nodemailer from "nodemailer";
 import {
+  BUY_ORDER_PIN_EMAIL_TEMPLATE,
   NEWS_SUMMARY_EMAIL_TEMPLATE,
   RESET_PASSWORD_EMAIL_TEMPLATE,
+  SELL_ORDER_PIN_EMAIL_TEMPLATE,
   STOCK_ALERT_LOWER_EMAIL_TEMPLATE,
   STOCK_ALERT_UPPER_EMAIL_TEMPLATE,
   WELCOME_EMAIL_TEMPLATE,
 } from "./template";
+import { Pin } from "lucide-react";
 
 export const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -136,3 +139,60 @@ export const sendResetPasswordEmail = async ({
 
   await transporter.sendMail(mailOptions);
 };
+
+
+export const sendBuyOrderPin = async ({
+  userEmail,
+  symbol,
+  pin,
+  qty,
+  price,
+  timestamp,
+  ttl
+} : PinEmailData) => {
+  const htmlTemplate = BUY_ORDER_PIN_EMAIL_TEMPLATE
+  .replace(/{{timestamp}}/g, timestamp)
+  .replace(/{{symbol}}/g, symbol)
+  .replace(/{{pin}}/g, pin)
+  .replace(/{{qty}}/g, qty)
+  .replace(/{{price}}/g, price)
+  .replace(/{{ttl}}/g, ttl)
+
+  const mailOptions = {
+    from: `"Stocksyy" <somashekar528234@gmail.com>`,
+    to: userEmail,
+    subject: `Buy Order Confirmation Pin`,
+    text: `PIN to buy ${symbol} stocks`,
+    html: htmlTemplate,
+  };
+
+  await transporter.sendMail(mailOptions);
+}
+
+export const sendSellOrderPin = async ({
+  userEmail,
+  symbol,
+  pin,
+  qty,
+  price,
+  timestamp,
+  ttl
+} : PinEmailData) => {
+  const htmlTemplate = SELL_ORDER_PIN_EMAIL_TEMPLATE
+  .replace(/{{timestamp}}/g, timestamp)
+  .replace(/{{symbol}}/g, symbol)
+  .replace(/{{pin}}/g, pin)
+  .replace(/{{qty}}/g, qty)
+  .replace(/{{price}}/g, price)
+  .replace(/{{ttl}}/g, ttl)
+
+  const mailOptions = {
+    from: `"Stocksyy" <somashekar528234@gmail.com>`,
+    to: userEmail,
+    subject: `Sell Order Confirmation Pin`,
+    text: `PIN to sell ${symbol} stocks`,
+    html: htmlTemplate,
+  };
+
+  await transporter.sendMail(mailOptions);
+}

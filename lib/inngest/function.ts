@@ -1,7 +1,7 @@
 import { success } from "better-auth";
 import { inngest } from "./client";
 import { NEWS_SUMMARY_EMAIL_PROMPT, PERSONALIZED_WELCOME_EMAIL_PROMPT } from "./prompt";
-import { sendNewsSummaryEmail, sendWelcomeEmail, sendUpperAlert, sendLowerAlert } from "../nodemailer";
+import { sendNewsSummaryEmail, sendWelcomeEmail, sendUpperAlert, sendLowerAlert, sendBuyOrderPin, sendSellOrderPin } from "../nodemailer";
 import { getAllUsersForNewsEmail } from "../actions/user.action";
 import { getNews } from "../actions/finnhub.actions";
 import { getFormattedTodayDate } from "../utils";
@@ -162,6 +162,54 @@ export const sendLowerAlertEmail = inngest.createFunction(
         return {
             success: true,
             message: 'Lower target reached'
+        }
+    }
+)
+
+export const sendBuyOrderPinEmail = inngest.createFunction(
+    {id: 'send-buy-order-pin-email'},
+    { event: 'app/orders.buy_pin_generated'},
+    async ({event, step}) => {
+        await step.run('send-buy-order-pin-email', async () => {
+            const { userEmail, symbol, pin, qty, price, timestamp, ttl } = event.data;
+            return await sendBuyOrderPin({
+                userEmail,
+                symbol,
+                pin,
+                qty,
+                price,
+                timestamp,
+                ttl
+            });
+        });
+
+        return {
+            success: true,
+            message: 'Buy order pin email sent'
+        }
+    }
+)
+
+export const sendSellOrderPinEmail = inngest.createFunction(
+    {id: 'send-sell-order-pin-email'},
+    { event: 'app/orders.sell_pin_generated'},
+    async ({event, step}) => {
+        await step.run('send-sell-order-pin-email', async () => {
+             const { userEmail, symbol, pin, qty, price, timestamp, ttl } = event.data;
+             return await sendSellOrderPin({
+                userEmail,
+                symbol,
+                pin,
+                qty,
+                price,
+                timestamp,
+                ttl
+             });
+        });
+
+        return {
+            success: true,
+            message: 'Sell order pin email sent'
         }
     }
 )

@@ -148,6 +148,12 @@
   .yellow-btn {
     @apply h-12 cursor-pointer bg-gradient-to-b from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-gray-950 font-medium text-base rounded-lg shadow-lg disabled:opacity-50;
   }
+   .red-btn {
+    @apply h-12 cursor-pointer bg-gradient-to-b from-red-600 to-red-500 hover:from-red-500 hover:to-red-600 text-gray-950 font-medium text-base rounded-lg shadow-lg disabled:opacity-50;
+  }
+   .green-btn {
+    @apply h-12 cursor-pointer bg-gradient-to-b from-green-700 to-green-600 hover:from-green-600 hover:to-green-700 text-gray-950 font-medium text-base rounded-lg shadow-lg disabled:opacity-50;
+  }
   .gray-btn {
     @apply h-12 cursor-pointer bg-gray-500 hover:bg-gray-600 text-white font-medium text-base rounded-lg shadow-lg disabled:opacity-50;
   }
