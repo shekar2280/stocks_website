@@ -13,6 +13,7 @@ import {
   TECHNICAL_ANALYSIS_WIDGET_CONFIG,
 } from "@/lib/constants";
 import { headers } from "next/headers";
+import Link from "next/link";
 
 interface StockDetailsProps {
   params: Promise<{ symbol: string }>;
@@ -58,6 +59,21 @@ export default async function StockDetails({ params }: StockDetailsProps) {
             config={SYMBOL_INFO_WIDGET_CONFIG(symbol)}
             height={170}
           />
+          <div className="flex flex-row w-full gap-3 mt-5">
+            <Link
+              href={`/stocks/orders?symbol=${symbol}&side=buy`}
+              className="green-btn w-full text-center flex items-center justify-center text-white!"
+            >
+              BUY
+            </Link>
+
+            <Link
+              href={`/stocks/orders?symbol=${symbol}&side=sell`}
+              className="red-btn w-full text-center flex items-center justify-center text-white!"
+            >
+              SELL
+            </Link>
+          </div>
           <div className="space-y-2 lg:hidden mt-3">
             <WatchlistButton
               userId={user.id}

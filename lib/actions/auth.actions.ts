@@ -35,6 +35,7 @@ export const signUpWithEmail = async ({
           investmentGoals,
           riskTolerance,
           preferredIndustry,
+          balance: 5000,
         },
       }
     );

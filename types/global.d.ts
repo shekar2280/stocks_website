@@ -76,6 +76,16 @@ declare global {
     targetPrice: string;
   };
 
+  type PinEmailData = {
+    userEmail: string;
+    symbol: string;
+    pin: string;
+    qty: string;
+    price: string;
+    timestamp: string;
+    ttl: string;
+  }
+
   type User = {
     id: string;
     name: string;
