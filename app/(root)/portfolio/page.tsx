@@ -4,11 +4,11 @@ import {
   TableBody,
   TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Meh } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -24,42 +24,58 @@ type PortfolioItem = {
 
 const Portfolio = () => {
   const router = useRouter();
+
   const [currentBalance, setCurrentBalance] = useState(0);
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
   const [profiles, setProfiles] = useState<Record<string, any>>({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
-      const res = await fetch("/api/portfolio", { credentials: "include" });
-      if (!res.ok) return;
-      const data = await res.json();
-      setPortfolio(data.portfolio);
-      setProfiles(data.profiles);
+      setLoading(true);
+      const pRes = await fetch("/api/portfolio", { credentials: "include" });
+      const bRes = await fetch("/api/get-balance", { credentials: "include" });
+
+      if (pRes.ok) {
+        const data = await pRes.json();
+        setPortfolio(data.portfolio ?? []);
+        setProfiles(data.profiles ?? {});
+      }
+
+      if (bRes.ok) {
+        const bal = await bRes.json();
+        setCurrentBalance(bal.balance ?? 0);
+      }
+
+      setLoading(false);
     };
+
     load();
-  }, []);
-
-  useEffect(() => {
-    const loadBalance = async () => {
-      const res = await fetch("/api/get-balance", {
-        credentials: "include",
-      });
-
-      if (!res.ok) return;
-
-      const data = await res.json();
-      setCurrentBalance(data.balance ?? 0);
-    };
-    loadBalance();
   }, []);
 
   const netWorth =
     currentBalance + portfolio.reduce((s, p) => s + (p.totalValue ?? 0), 0);
 
-  if (!portfolio.length) {
+  if (loading) {
     return (
       <div className="w-full flex justify-center py-32 text-gray-200">
         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500" />
+      </div>
+    );
+  }
+
+  if (!loading && portfolio.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-40 text-white">
+        <div className="border border-gray-700 bg-gray-900/40 px-8 py-10 rounded-xl text-center">
+          <div className="flex flex-col items-center gap-2">
+            <Meh className="w-20 h-20 text-yellow-400" />
+            <div className="text-xl font-semibold mb-2">Portfolio Empty</div>
+          </div>
+          <div className="text-gray-400 text-sm">
+            Your holdings will appear here once you start trading.
+          </div>
+        </div>
       </div>
     );
   }
@@ -99,8 +115,8 @@ const Portfolio = () => {
           <TableCaption>
             <div className="flex flex-col items-center text-gray-400 gap-2 mt-5">
               <span>
-                Note: Total Value is calculated when market closes 20:30(UTC)
-                /2:00AM(IST)
+                Note: Total Value is calculated when market closes 20:30(UTC) /
+                2:00AM(IST)
               </span>
               <span>
                 Newly purchased stocks Total Value and Profit will be estimated
