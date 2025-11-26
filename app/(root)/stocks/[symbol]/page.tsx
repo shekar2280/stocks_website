@@ -1,3 +1,4 @@
+import BuySellButtons from "@/components/BuySellButtons";
 import PriceAlert from "@/components/PriceAlert";
 import TradingViewWidget from "@/components/TradingViewWidget";
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,23 @@ export default async function StockDetails({ params }: StockDetailsProps) {
   const stock = stocks.find((s) => s.symbol === symbol);
   const companyName = stock?.name || symbol;
 
+  
+  function isUSMarketOpen(): boolean {
+    const now = new Date();
+    const utcDay = now.getUTCDay(); // 0 Sun → 6 Sat
+    if (utcDay === 0 || utcDay === 6) return false;
+
+    const utcHour = now.getUTCHours();
+    const utcMin = now.getUTCMinutes();
+    const total = utcHour * 60 + utcMin;
+
+    const open = 14 * 60 + 30; // 14:30 UTC
+    const close = 21 * 60; // 21:00 UTC
+
+    return total >= open && total < close;
+  }
+  const marketOpen = isUSMarketOpen();
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[70%_30%] min-h-screen gap-6">
       <section className="rounded-2xl shadow-md p-6 space-y-5">
@@ -59,21 +77,7 @@ export default async function StockDetails({ params }: StockDetailsProps) {
             config={SYMBOL_INFO_WIDGET_CONFIG(symbol)}
             height={170}
           />
-          <div className="flex flex-row w-full gap-3 mt-5">
-            <Link
-              href={`/stocks/orders?symbol=${symbol}&side=buy`}
-              className="green-btn w-full text-center flex items-center justify-center text-white!"
-            >
-              BUY
-            </Link>
-
-            <Link
-              href={`/stocks/orders?symbol=${symbol}&side=sell`}
-              className="red-btn w-full text-center flex items-center justify-center text-white!"
-            >
-              SELL
-            </Link>
-          </div>
+          <BuySellButtons symbol={symbol} marketOpen={marketOpen} />
           <div className="space-y-2 lg:hidden mt-3">
             <WatchlistButton
               userId={user.id}

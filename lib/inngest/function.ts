@@ -3,9 +3,12 @@ import { inngest } from "./client";
 import { NEWS_SUMMARY_EMAIL_PROMPT, PERSONALIZED_WELCOME_EMAIL_PROMPT } from "./prompt";
 import { sendNewsSummaryEmail, sendWelcomeEmail, sendUpperAlert, sendLowerAlert, sendBuyOrderPin, sendSellOrderPin } from "../nodemailer";
 import { getAllUsersForNewsEmail } from "../actions/user.action";
-import { getNews } from "../actions/finnhub.actions";
+import { getCurrentPrice, getNews } from "../actions/finnhub.actions";
 import { getFormattedTodayDate } from "../utils";
 import { getWatchlistSymbolsByUserId } from "../actions/watchlist.actions";
+import { connectToDB } from "@/database/mongoose";
+import positionsModels from "@/database/models/positions.models";
+import { ClosingPrice } from "@/database/models/closingPrices.models";
 
 export const sendSignUpEmail = inngest.createFunction(
     {id: 'sign-up-email'},
@@ -213,3 +216,39 @@ export const sendSellOrderPinEmail = inngest.createFunction(
         }
     }
 )
+
+export const updateClosingPrices = inngest.createFunction(
+  { id: "update-closing-prices" },
+
+  [{ cron: "30 20 * * 1-5" }], 
+
+  async ({ step }) => {
+    await step.run("connect-db", async () => {
+      await connectToDB();
+    });
+
+    const symbols = await step.run("get-unique-symbols", async () => {
+      const positions = await positionsModels.find({});
+      return [...new Set(positions.map((p) => p.symbol))];
+    });
+
+    if (symbols.length === 0) {
+      return { success: false, message: "No symbols found" };
+    }
+
+    await step.run("update-prices", async () => {
+      for (const symbol of symbols) {
+        const price = await getCurrentPrice(symbol);
+        if (!price) continue;
+
+        await ClosingPrice.findOneAndUpdate(
+          { symbol },
+          { closePrice: price, updatedAt: new Date() },
+          { upsert: true }
+        );
+      }
+    });
+
+    return { success: true };
+  }
+);

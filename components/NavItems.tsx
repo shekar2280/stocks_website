@@ -6,11 +6,11 @@ import { usePathname } from "next/navigation";
 import SearchCommand from "@/components/SearchCommand";
 
 const NavItems = ({
-  initialStocks,
   userId,
+  initialStocks,
 }: {
-  initialStocks: StockWithWatchlistStatus[];
   userId?: string | null;
+  initialStocks: StockWithWatchlistStatus[];
 }) => {
   const pathname = usePathname();
 

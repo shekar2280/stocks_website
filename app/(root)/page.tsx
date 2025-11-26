@@ -4,7 +4,6 @@ import { auth } from "@/lib/better-auth/auth";
 import { headers } from "next/headers";
 import HomePageWidgets from "@/components/HomePageWidgets";
 
-const scriptUrl = `https://s3.tradingview.com/external-embedding/embed-widget-`;
 
 export default async function Home() {
   const session = await auth.api.getSession({ headers: await headers() });
