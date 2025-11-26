@@ -3,7 +3,7 @@ import { House, Search, Star, Wallet } from "lucide-react"
 export const NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: House },
   { href: "/watchlist", label: "Watchlist", icon: Star },
-  // { href: "/wallet", label: "Wallet", icon: Wallet },
+  { href: "/portfolio", label: "Portfolio", icon: Wallet },
   { href: "/search", label: "Search", icon: Search },
 ];
 

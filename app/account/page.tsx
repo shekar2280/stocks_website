@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import AccountDetails from "@/components/AccountDetails";
 import { connectToDB } from "@/database/mongoose";
 import { ObjectId } from "mongodb";
+import { searchStocks } from "@/lib/actions/finnhub.actions";
 
 const AccountPage = async () => {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -28,9 +29,12 @@ const AccountPage = async () => {
     preferredIndustry: extended?.preferredIndustry,
   };
 
+   const initialStocks = await searchStocks(undefined, user.email);
+  const plainStocks = JSON.parse(JSON.stringify(initialStocks));
+
   return (
     <div>
-      <Header user={fullUser} />
+      <Header user={fullUser} initialStocks={plainStocks} />
       <div className="text-white">
         <AccountDetails user={fullUser} />
       </div>
